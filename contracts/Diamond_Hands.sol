@@ -45,6 +45,7 @@ contract Dimannd_Hands {
         
         // get the balance of who called the function
         uint amount = balances[msg.sender];
+        balances[msg.sender] -= amount;
         
         (bool success, ) = msg.sender.call{value: amount}("");
         require(success, "Failed to send Ether");

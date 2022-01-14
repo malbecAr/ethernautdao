@@ -45,70 +45,15 @@ describe("Diamond Hands", function () {
 
   });
 
-  it("Bob should withdraw", async function () {
+  it("Bob can withdraw", async function () {
  
     //machine time - move two years to the future
-    await ethers.provider.send("evm_increaseTime", [2 * 365 * 24 * 60 * 60]); // add 2 years
+    await ethers.provider.send("evm_increaseTime", [2 * 365 * 24 * 60 * 60 + 1]); // add 2 years
     await ethers.provider.send("evm_mine", []); // mine a block
 
     //let's withdraw
     await diamondsHands.withdraw();
-
-    const bobBalanceDeposit = await diamondsHands.balanceOf();
-    //verify that bob deposit 1 eth
-    //console.log(bobBalanceDeposit);
-    const ONE_ETHER = ethers.utils.parseEther("1");
-    expect(bobBalanceDeposit).to.equal(ONE_ETHER);
-    //const bobBalanceDeposit = await diamondsHands.balanceOf(bob.address);
-    //expect(await diamondsHands.balanceOf()).to.be.equal("0");
-
-  });
-
-
-/*
-  it("Bob Shouldt withdraw", async function () {
-    const ONE_ETHER = ethers.utils.parseEther("1");
+    expect(await diamondsHands.balanceOf()).to.be.equal("0");
     
-    await expect(diamondHands.withdraw(ONE_ETHER)).to.be.revertedWith("You are LOCKED! paper hands");
-
-    await ethers.provider.send("evm_increaseTime", [2 * 365 * 24 * 60 * 60]); // add 2 years
-    await ethers.provider.send("evm_mine", []); // add 2 years
-
-    await expect(diamondHands.withdraw(ONE_ETHER)).to.be.revertedWith("Not enough balance");
-
-
-
-    const bobBalanceDeposit = await diamondsHands.balanceOf(bob.address);
-    await expect(diamondHands.withdraw(bobBalanceDeposit));
-    expect(await diamondsHands.balanceOf(bob.address)).to.be.equal("0");
-
-    // await expect(diamondHands.withdrawAll()).to.be.revertedWith("Not enough balance");
   });
-
-  it("Alice Should deposit&withdrawAll", async function () {
-    diamondsHands = diamondsHands.connect(alice);
-    const ONE_ETHER = ethers.utils.parseEther("1");
-    
-    const beforeBalance = await alice.getBalance();
-    await diamondsHands.deposit({ value: ONE_ETHER });
-    const afterBalance = await alice.getBalance();
-    expect(beforeBalance.sub(afterBalance)).to.above(ONE_ETHER, ethers.utils.parseEther("0.00001"));
-
-    await ethers.provider.send("evm_increaseTime", [4 * 365 * 24 * 60 * 60]); // add 4 years
-    await ethers.provider.send("evm_mine", []); // add 4 years
-
-    // redeposito resetea tiempo
-    await diamondsHands.deposit({ value: ONE_ETHER });
-
-    await expect(diamondHands.withdraw(ONE_ETHER)).to.be.revertedWith("You are LOCKED! paper hands");
-    await expect(diamondHands.withdrawAll()).to.be.revertedWith("You are LOCKED! paper hands");
-
-    await ethers.provider.send("evm_increaseTime", [2 * 365 * 24 * 60 * 60]);
-    await ethers.provider.send("evm_mine", []); 
-
-    await diamondHands.withdrawAll();
-    expect(await diamondsHands.balanceOf(alice.address)).to.be.equal("0");
-
-  });
-*/
 });
