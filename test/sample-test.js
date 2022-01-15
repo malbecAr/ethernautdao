@@ -11,7 +11,7 @@ describe("Diamond Hands", function () {
   });
 
   it("Should deploy", async function () {
-    const DiamondsHands = await ethers.getContractFactory("Dimannd_Hands", deployer);
+    const DiamondsHands = await ethers.getContractFactory("Diamond_Hands", deployer);
     diamondsHands = await DiamondsHands.deploy(/* variables del constructor */);
 
     await diamondsHands.deployed();
@@ -31,29 +31,40 @@ describe("Diamond Hands", function () {
     expect(beforeBalance.sub(afterBalance)).to.above(ONE_ETHER, ethers.utils.parseEther("0.00001"));
 
     //ask the contract what is bob deposit balance
-    const bobBalanceDeposit = await diamondsHands.balanceOf();
+    const bobBalanceDeposit = await diamondsHands.balanceOf(bob.address);
     //verify that bob deposit 1 eth
     //console.log(bobBalanceDeposit);
     expect(bobBalanceDeposit).to.equal(ONE_ETHER);
   });
 
   it("Bob Shouldn't withdraw", async function () {
-    const ONE_ETHER = ethers.utils.parseEther("1");
-    
     //let's try to withdra before the 2yr
     await expect(diamondsHands.withdraw()).to.be.revertedWith("You are LOCKED! paper hands");
-
   });
 
   it("Bob can withdraw", async function () {
- 
     //machine time - move two years to the future
     await ethers.provider.send("evm_increaseTime", [2 * 365 * 24 * 60 * 60 + 1]); // add 2 years
     await ethers.provider.send("evm_mine", []); // mine a block
 
     //let's withdraw
     await diamondsHands.withdraw();
-    expect(await diamondsHands.balanceOf()).to.be.equal("0");
+    expect(await diamondsHands.balanceOf(bob.address)).to.be.equal("0");
+    
+  });
+
+  it("Check Bob time left", async function () {
+    const timeLeft = await diamondsHands.timeLeft(bob.address);
+    //console.log(ethers.utils.toString(time));
+    console.log(timeLeft.toNumber());
+  
+    
+    await expect(timeLeft.toNumber()).to.be.greaterThan(0);
+  
+
+    //machine time - move two years to the future
+    //await ethers.provider.send("evm_increaseTime", [2 * 365 * 24 * 60 * 60 + 1]); // add 2 years
+    //await ethers.provider.send("evm_mine", []); // mine a block
     
   });
 });
